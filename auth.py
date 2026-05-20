@@ -203,14 +203,46 @@ def resend_otp(body: OTPRequestModel, db: Session = Depends(get_db)):
 # Login — phone + password → token
 @auth_router.post("/login")
 def login(body: LoginModel, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.phone == body.phone).first()
-    print(user)  # Debug: Check if user is foun
-    verified = verify_password(body.password, user.password_hash) # type: ignore
-    print(f"Password verified: {verified}")  # Debug: Check password verification
-    if not user or not verify_password(body.password, user.password_hash):  # type: ignore
-        raise HTTPException(status_code=401, detail="Invalid phone or password")
-    if not user.is_verified:  # type: ignore
-        raise HTTPException(status_code=403, detail="Phone not verified. Please verify OTP first.")
+    user = db.query(User).filter(
+        User.phone == body.phone
+    ).first()
+
+    print(user)
+
+    # First check if user exists
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid phone or password"
+        )
+
+    verified = verify_password(
+        body.password,
+        user.password_hash # type: ignore
+    )
+
+    print(f"Password verified: {verified}")
+
+    # Check password
+    if not verified:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid phone or password"
+        )
+
+    # Check verification
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=403,
+            detail="Phone not verified. Please verify OTP first."
+        )
 
     token = create_access_token(str(user.id))
-    return {"token": {"access_token": token, "token_type": "bearer"}, "user": user}
+
+    return {
+        "token": {
+            "access_token": token,
+            "token_type": "bearer"
+        },
+        "user": user
+    }
