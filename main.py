@@ -33,13 +33,18 @@ app = FastAPI(
 # Enable CORS for the deployed base URL (and local dev if needed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[BASE_URL],
-    # allow_origins=["*"],  # For development, allow all origins. Change in production.
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5000",
+        "http://localhost:8080",
+        "http://127.0.0.1:5500",
+        "http://localhost:63558",  # flutter web dynamic port
+        BASE_URL,
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(user_router)
 app.include_router(blood_router)
 app.include_router(sos_router)
