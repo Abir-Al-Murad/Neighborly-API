@@ -231,7 +231,7 @@ def login(body: LoginModel, db: Session = Depends(get_db)):
         )
 
     # Check verification
-    if not user.is_verified:
+    if not user.is_verified:  # type: ignore
         raise HTTPException(
             status_code=403,
             detail="Phone not verified. Please verify OTP first."
