@@ -5,9 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 import database_models
-from routerss.auth import auth_router
+from routers.auth import auth_router
 
-from routerss import (
+from routers import (
     user,
     blood,
     hazard_alert,
@@ -46,6 +46,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router)
 app.include_router(user.user_router)
 app.include_router(blood.blood_router)
 app.include_router(sos.sos_router)
@@ -53,7 +55,7 @@ app.include_router(home_listing.home_router)
 app.include_router(medicine_exchange.medicine_router)
 app.include_router(lost_and_found.lost_found_router)
 app.include_router(hazard_alert.hazard_router)
-app.include_router(auth_router)
+
 
 
 
