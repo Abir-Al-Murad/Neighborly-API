@@ -5,16 +5,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine
 import database_models
-from auth import auth_router
+from routerss.auth import auth_router
 
-from routers import (
-    user_router,
-    blood_router,
-    sos_router,
-    home_router,
-    medicine_router,
-    lost_found_router,
-    hazard_router,
+from routerss import (
+    user,
+    blood,
+    hazard_alert,
+    home_listing,
+    medicine_exchange,
+    lost_and_found,
+    sos,
 )
 
 database_models.Base.metadata.create_all(bind=engine)
@@ -46,13 +46,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(user_router)
-app.include_router(blood_router)
-app.include_router(sos_router)
-app.include_router(home_router)
-app.include_router(medicine_router)
-app.include_router(lost_found_router)
-app.include_router(hazard_router)
+app.include_router(user.user_router)
+app.include_router(blood.blood_router)
+app.include_router(sos.sos_router)
+app.include_router(home_listing.home_router)
+app.include_router(medicine_exchange.medicine_router)
+app.include_router(lost_and_found.lost_found_router)
+app.include_router(hazard_alert.hazard_router)
 app.include_router(auth_router)
 
 
