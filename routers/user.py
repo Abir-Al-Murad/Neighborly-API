@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from database_models import UserModel as User
 from schemas import UserModel, UserUpdateModel
-from routerss.auth import get_current_user
+from routers.auth import get_current_user
 from helpers import get_user_or_404
     
 user_router = APIRouter(prefix="/users", tags=["Users"])

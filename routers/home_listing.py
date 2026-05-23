@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from database import get_db
 from database_models import (
@@ -11,11 +12,11 @@ from database_models import (
     HomeListingModel as HomeListing,
     HomePhotoModel as HomePhoto,
 )
-from helpers import haversine_km
+
 from schemas import (
     HomeListingCreateModel, HomeListingUpdateModel, HomeListingModel, HomePhotoModel,
 )
-from routerss.auth import get_current_user
+from routers.auth import get_current_user
 # ───────────────────────────────────────────────
 # Home Listings
 # ───────────────────────────────────────────────
@@ -44,52 +45,42 @@ def get_listings(
     low_price: Optional[float] = None,
     high_price: Optional[float] = None,
     listing_type: Optional[str] = None,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    
-    print(f"get_listings called with lat={lat}, lng={lng}, radius_km={radius_km}, area={area}, low_price={low_price}, high_price={high_price}, listing_type={listing_type}")
     query = db.query(HomeListing).filter(
-        HomeListing.is_active == True
+        HomeListing.is_active.is_(True)
     )
 
     if listing_type:
-        query = query.filter(
-            HomeListing.listing_type == listing_type
-        )
-
+        query = query.filter(HomeListing.listing_type == listing_type)
     if low_price is not None:
-        query = query.filter(
-            HomeListing.price >= low_price
-        )
-
+        query = query.filter(HomeListing.price >= low_price)
     if high_price is not None:
-        query = query.filter(
-            HomeListing.price <= high_price
-        )
-
+        query = query.filter(HomeListing.price <= high_price)
     if area:
+        query = query.filter(HomeListing.area_name.ilike(f"%{area}%"))
+
+    # ✅ DB-তেই haversine filter — তোমার existing formula হুবহু SQL-এ
+    if lat is not None and lng is not None:
         query = query.filter(
-            HomeListing.area_name.ilike(f"%{area}%")
+            HomeListing.lat.isnot(None),
+            HomeListing.lng.isnot(None),
+            (6371 * 2 * func.asin(func.sqrt(
+                func.pow(func.sin(func.radians(HomeListing.lat - lat) / 2), 2) +
+                func.cos(func.radians(lat)) *
+                func.cos(func.radians(HomeListing.lat)) *
+                func.pow(func.sin(func.radians(HomeListing.lng - lng) / 2), 2)
+            ))) <= radius_km
         )
 
-    listings = query.all()
-
-    if lat is not None and lng is not None:
-        listings = [
-            l for l in listings
-            if l.lat is not None
-            and l.lng is not None
-            and haversine_km(
-                lat,
-                lng,
-                l.lat,
-                l.lng
-            ) <= radius_km
-        ]
+    # ✅ এখন pagination সঠিকভাবে কাজ করবে
+    offset = (page - 1) * page_size
+    listings = query.offset(offset).limit(page_size).all()
 
     return listings
-
 @home_router.get("/{listing_id}", response_model=HomeListingModel)
 def get_listing(
     listing_id: UUID,
