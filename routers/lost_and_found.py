@@ -17,7 +17,7 @@ from database_models import (
 from schemas import (
     LostFoundPostCreateModel, LostFoundPostUpdateModel, LostFoundPostModel,
 )
-from routerss.auth import get_current_user
+from routers.auth import get_current_user
 lost_found_router = APIRouter(prefix="/lost-found", tags=["Lost and Found"])
 
 @lost_found_router.post("", response_model=LostFoundPostModel, status_code=status.HTTP_201_CREATED)

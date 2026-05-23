@@ -15,7 +15,7 @@ from helpers import haversine_km
 from schemas import (
     HomeListingCreateModel, HomeListingUpdateModel, HomeListingModel, HomePhotoModel,
 )
-from routerss.auth import get_current_user
+from routers.auth import get_current_user
 # ───────────────────────────────────────────────
 # Home Listings
 # ───────────────────────────────────────────────

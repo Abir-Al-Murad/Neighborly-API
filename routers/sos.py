@@ -21,7 +21,7 @@ from schemas import (
     SOSNotificationModel, SOSNotificationRespondModel,
 )
 
-from routerss.auth import get_current_user
+from routers.auth import get_current_user
 
 sos_router = APIRouter(prefix="/sos", tags=["SOS"])
 

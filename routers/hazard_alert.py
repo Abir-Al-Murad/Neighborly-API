@@ -14,7 +14,7 @@ from helpers import haversine_km
 from schemas import (
     HazardAlertCreateModel, HazardAlertUpdateModel, HazardAlertModel, HazardConfirmationModel
 )
-from routerss.auth import get_current_user
+from routers.auth import get_current_user
 
 # ───────────────────────────────────────────────
 # Hazard Alerts
