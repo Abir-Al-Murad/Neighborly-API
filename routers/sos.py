@@ -22,6 +22,7 @@ from schemas import (
 )
 
 from routers.auth import get_current_user
+from helpers import get_user_or_404
 
 sos_router = APIRouter(prefix="/sos", tags=["SOS"])
 

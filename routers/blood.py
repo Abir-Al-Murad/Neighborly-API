@@ -145,7 +145,7 @@ def update_donor(
     return donor
 
 
-@blood_router.delete("/{donor_id}", status_code=status.HTTP_204_NO_CONTENT)
+@blood_router.delete("/{donor_id}")
 def delete_donor(
     donor_id: UUID,
     db: Session = Depends(get_db),
@@ -158,3 +158,4 @@ def delete_donor(
         raise HTTPException(status_code=403, detail="Not your donor profile")
     db.delete(donor)
     db.commit()
+    return {"message": "Donor deleted"}

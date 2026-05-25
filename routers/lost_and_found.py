@@ -89,7 +89,7 @@ def update_lost_found_post(
     return post
 
 
-@lost_found_router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+@lost_found_router.delete("/{post_id}")
 def delete_lost_found_post(
     post_id: UUID,
     db: Session = Depends(get_db),
@@ -102,3 +102,4 @@ def delete_lost_found_post(
         raise HTTPException(status_code=403, detail="Not your post")
     db.delete(post)
     db.commit()
+    return {"message": "Post deleted"}

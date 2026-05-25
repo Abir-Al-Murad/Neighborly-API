@@ -90,7 +90,7 @@ def update_medicine_post(
     return post
 
 
-@medicine_router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+@medicine_router.delete("/{post_id}")
 def delete_medicine_post(
     post_id: UUID,
     db: Session = Depends(get_db),
@@ -103,6 +103,7 @@ def delete_medicine_post(
         raise HTTPException(status_code=403, detail="Not your post")
     db.delete(post)
     db.commit()
+    return {"message": "Medicine post deleted"}
 
 
 @medicine_router.post("/{post_id}/request", response_model=MedicineRequestModel, status_code=status.HTTP_201_CREATED)

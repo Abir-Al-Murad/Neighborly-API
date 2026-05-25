@@ -114,7 +114,7 @@ def update_hazard_alert(
     return alert
 
 
-@hazard_router.delete("/{alert_id}", status_code=status.HTTP_204_NO_CONTENT)
+@hazard_router.delete("/{alert_id}")
 def delete_hazard_alert(
     alert_id: UUID,
     db: Session = Depends(get_db),
@@ -127,3 +127,4 @@ def delete_hazard_alert(
         raise HTTPException(status_code=403, detail="Not your alert")
     db.delete(alert)
     db.commit()
+    return {"message": "Hazard alert deleted"}

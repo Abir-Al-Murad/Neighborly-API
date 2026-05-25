@@ -43,7 +43,7 @@ def update_user(
     return user
 
 
-@user_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@user_router.delete("/{user_id}")
 def delete_user(
     user_id: UUID,
     db: Session = Depends(get_db),
@@ -54,3 +54,4 @@ def delete_user(
     user = get_user_or_404(user_id, db)
     db.delete(user)
     db.commit()
+    return {"message": "User deleted"}

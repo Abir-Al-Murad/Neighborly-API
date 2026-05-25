@@ -112,7 +112,7 @@ def update_listing(
     return listing
 
 
-@home_router.delete("/{listing_id}", status_code=status.HTTP_204_NO_CONTENT)
+@home_router.delete("/{listing_id}")
 def delete_listing(
     listing_id: UUID,
     db: Session = Depends(get_db),
@@ -125,6 +125,7 @@ def delete_listing(
         raise HTTPException(status_code=403, detail="Not your listing")
     db.delete(listing)
     db.commit()
+    return {"message": "Listing deleted"}
 
 
 @home_router.post("/{listing_id}/photos", response_model=HomePhotoModel, status_code=status.HTTP_201_CREATED)
