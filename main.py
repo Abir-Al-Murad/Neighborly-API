@@ -60,6 +60,9 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 @app.middleware("http")
 async def response_envelope_middleware(request: Request, call_next):
+    if request.url.path in {"/openapi.json", "/docs", "/redoc"}:
+        return await call_next(request)
+
     response = await call_next(request)
 
     safe_headers = {
